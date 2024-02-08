@@ -4,10 +4,25 @@ const getRandomInt = (max) => {
     return Math.floor(Math.random() * max);
 }
 
+const capitalize = (str) => {
+    return str.slice(0, 1).toUpperCase() + str.slice(1);
+}
+
 const getComputerChoice = () => {
     const randomIndex = getRandomInt(VALID_CHOICES.length);
     
     return VALID_CHOICES[randomIndex];
+}
+
+const mapPlayerChoice = (playerChoice) => {
+    switch (playerChoice) {
+        case '✊':
+            return 'rock'
+        case '✋':
+            return 'paper'
+        case '✌️':
+            return 'scissors'
+    }
 }
 
 const playRound = (playerSelection, computerSelection) => {
@@ -52,9 +67,9 @@ const playRound = (playerSelection, computerSelection) => {
 
     switch (result) {
         case 'win':
-            return `You Win! ${caseInsPlayerSelection} beats ${caseInsComputerSelection}`;
+            return `You Win! ${capitalize(caseInsPlayerSelection)} beats ${caseInsComputerSelection}`;
         case 'lose':
-            return `You Lose! ${caseInsComputerSelection} beats ${caseInsPlayerSelection}`;
+            return `You Lose! ${capitalize(caseInsComputerSelection)} beats ${caseInsPlayerSelection}`;
         default:
             return `Draw! You both choose ${caseInsPlayerSelection}`;
     }
@@ -89,7 +104,7 @@ const toggleResetButtonVisibility = (visible) => {
 }
 
 const playGame = (e) => {
-    const choice = e.target.textContent.toLowerCase();
+    const choice = mapPlayerChoice(e.target.textContent);
 
     const result = playRound(choice, getComputerChoice());
     writeMessageToGameConsole(result);
