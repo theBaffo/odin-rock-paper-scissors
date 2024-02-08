@@ -2,7 +2,7 @@ const VALID_CHOICES = ['rock', 'paper', 'scissors'];
 
 const getRandomInt = (max) => {
     return Math.floor(Math.random() * max);
-  }
+}
 
 const getComputerChoice = () => {
     const randomIndex = getRandomInt(VALID_CHOICES.length);
@@ -60,43 +60,78 @@ const playRound = (playerSelection, computerSelection) => {
     }
 }
 
-const playGame = () => {
-    console.log('Rock Paper Scissors Game!');
+const writeMessageToGameConsole = (msg) => {
+    const gameConsole = document.querySelector('#console');
+    gameConsole.textContent = msg;
+}
 
-    let playerScore = 0, computerScore = 0;
+const updatePlayerScore = (newScore) => {
+    const score = document.querySelector('#player-score');
+    score.textContent = `Player Score: ${newScore}`;
+}
 
-    for (let i = 1; i <= 5; i++) {
-        let choice = prompt(`Round ${i}! Please enter your choice:`);
+const updateComputerScore = (newScore) => {
+    const score = document.querySelector('#computer-score');
+    score.textContent = `Computer Score: ${newScore}`;
+}
 
-        while (!VALID_CHOICES.includes(choice.toLowerCase())) {
-            choice = prompt(`"${choice}" is not a valid value! Please enter your choice:`);
-        }
+const toggleGameButtonsEnable = (enable) => {
+    const gameButtons = document.querySelectorAll('.game-button');
 
-        const result = playRound(choice, getComputerChoice());
+    gameButtons.forEach((button) => {
+        button.disabled = !enable;
+    });
+}
 
-        console.log(result);
+const toggleResetButtonVisibility = (visible) => {
+    const resetGameButton = document.querySelector('#reset-game-button');
+    resetGameButton.hidden = !visible
+}
 
-        if (result.startsWith('You Win!')) {
-            playerScore++;
-        } else if (result.startsWith('You Lose!')) {
-            computerScore++;
-        } else {
-            playerScore++;
-            computerScore++;
-        }
+const playGame = (e) => {
+    const choice = e.target.textContent.toLowerCase();
+
+    const result = playRound(choice, getComputerChoice());
+    writeMessageToGameConsole(result);
+
+    if (result.startsWith('You Win!')) {
+        updatePlayerScore(++playerScore)
+    } else if (result.startsWith('You Lose!')) {
+        updateComputerScore(++computerScore)
     }
 
-    console.log('Here is the result!');
-    console.log('Player Score: ', playerScore);
-    console.log('Computer Score: ', computerScore);
+    if (playerScore === 5 || computerScore === 5) {
+        let msg = playerScore === 5 ? 'You Win!' : 'You Lose!';
 
-    if (playerScore > computerScore) {
-        console.log('You Win!');
-    } else if (playerScore < computerScore) {
-        console.log('You Lose!');
-    } else {
-        console.log('Draw!');
+        writeMessageToGameConsole(msg);
+
+        toggleGameButtonsEnable(false);
+        toggleResetButtonVisibility(true);
     }
 }
 
-playGame();
+const resetGame = () => {
+    playerScore = 0;
+    computerScore = 0;
+
+    updatePlayerScore(0);
+    updateComputerScore(0);
+    writeMessageToGameConsole('Please enter your choice:')
+
+    toggleGameButtonsEnable(true);
+    toggleResetButtonVisibility(false);    
+}
+
+// Main Logic
+
+let playerScore = 0, computerScore = 0;
+
+const gameButtons = document.querySelectorAll('.game-button');
+
+gameButtons.forEach((button) => {
+  button.addEventListener('click', playGame);
+});
+
+const resetGameButton = document.querySelector('#reset-game-button');
+
+resetGameButton.addEventListener('click', resetGame)
